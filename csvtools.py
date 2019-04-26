@@ -183,6 +183,9 @@ class ProzhitoNote(ProzhitoTableNode):
 
     def getAuthor(self):
         return self.getDiary().getAuthor()
+    
+    def __str__(self):
+        return self.text
 
 
 class ProzhitoDiaries(ProzhitoTable):
