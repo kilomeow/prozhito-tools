@@ -1,12 +1,13 @@
 import csv
 import os.path
+import datetime
 
 _OLDDELIMITER = ',#'
 _NEWDELIMITER = '§'
 _QUOTECHAR    = '"'
 
 class CSV_Iterator:
-    """ Produce iterator interface for csv files with replacing characters """
+    """ This is a special input wrapper to change delimiter to OK format for python csv module."""
     def __init__(self, f, oldstr, newstr):
         self.f = f
         self.oldstr = oldstr
@@ -20,7 +21,7 @@ class CSV_Iterator:
         return l.replace(self.oldstr, self.newstr)
 
 class CSV_Translater:
-    """ Output file-like object that translates characters. """
+    """ This is a special output wrapper to change delimiter to OK format for python csv module."""
     def __init__(self, f, oldstr, newstr):
         self.f = f
         self.oldstr = oldstr
@@ -34,9 +35,10 @@ class CSV_Translater:
 
 
 class DumpWrapper:
-    """ Wrapper around dump of Prozhito tables in csv """    
+    """ Interface for dump of Prozhito tables in csv. """    
     _NOTESFILENAME = 'notes.csv'
-    ...
+    _DIARIESFILENAME = 'diary.csv'
+    _PERSONSFILENAME = 'persons.csv'
 
     def __init__(self, csvpath='', _delimiter=_OLDDELIMITER, _quotechar=_QUOTECHAR):
         self.csvpath = csvpath
@@ -46,7 +48,8 @@ class DumpWrapper:
         self._quotechar = _quotechar
                 
         self._notesfilename = DumpWrapper._NOTESFILENAME
-        ...
+        self._diariesfilename = DumpWrapper._DIARIESFILENAME
+        self._personsfilename = DumpWrapper._PERSONSFILENAME
 
     def dumpopen(self, csvpath):
         self.csvpath = csvpath
@@ -60,12 +63,23 @@ class DumpWrapper:
         n = ProzhitoNotes()
         n.load(self, self._notesfilename)
         return n
+    
+    def diaries(self):
+        d = ProzhitoDiaries()
+        d.load(self, self._diariesfilename)
+        return d
+
+    def persons(self):
+        p = ProzhitoPersons()
+        p.load(self, self._personsfilename)
+        return p
 
 
 class ProzhitoTable:
     def __init__(self):
         self.dumpwrap = None
-        self.filename = ''        
+        self.filename = ''
+        self.csvfile = None
         self.csvreader = None
 
     def load(self, dumpwrap, filename):
@@ -73,17 +87,111 @@ class ProzhitoTable:
         f = open(filepath, newline='')
         fi = CSV_Iterator(f, dumpwrap._olddelimiter, dumpwrap._newdelimiter)
         fr = csv.reader(fi, delimiter=dumpwrap._newdelimiter, quotechar=dumpwrap._quotechar)
+        self.csvfile = f
         self.dumpwrap = dumpwrap
         self.filename = filename        
         self.csvreader = fr
+    
+    def seek(self, n):
+        self.csvfile.seek(n)
+    
+    def byID(self, noteid):
+        for n in self:
+            if n.ID == noteid: return n
+
+
+class ProzhitoTableIterable:
+    ...
+
+
+class ProzhitoTableNode:
+    def loadraw(self, rawlist):
+        ...
 
 
 class ProzhitoNotes(ProzhitoTable):
-    def dateOf(self, ind):
-        return None
+    def __iter__(self):
+        return ProzhitoNotesIterable(self.csvreader, self.dumpwrap)
 
     def byDate(self, date):
-        return None
+        for n in self:
+            if n.date == date: return n
+    
+    def searchDate(self, date):
+        result = []        
+        for n in self:
+            if n.date == date: result.append(n)
+        return result
+    
+    def searchInterval(self, startdate, enddate):
+        result = []
+        for n in self:
+            if startdate <= n.date <= enddate: result.append(n.date)
+        return result
+    
+    def sortInterval(self, startdate, enddate):
+        result = []        
+        for i in range((enddate-startdate).days()):
+            result.append([])
+        for n in self:
+            if startdate <= n.date <= enddate:
+                i = (n.date-startdate).days()
+                result[i].append(n)
+        return result
 
-    def byInterval(self, startdate, enddate):
-        return None
+
+class ProzhitoNotesIterable(ProzhitoTableIterable):
+    def __init__(self, csvreader, dumpwrap):
+        self.csvreader = csvreader
+        self.ind = 0
+        self.dw = dumpwrap
+    
+    def __next__(self):
+        l = next(self.csvreader)
+        n = ProzhitoNote(self.dw)
+        n.loadraw(l)     
+        self.ind += 1        
+        return n
+
+
+def datereader(datestring):
+    try:
+        return datetime.datetime.strptime(datestring, '%Y-%m-%d').date()
+    except ValueError:
+        ds = datestring.split('-')
+        return list(map(int, ds))
+            
+
+
+class ProzhitoNote(ProzhitoTableNode):
+    def __init__(self, dumpwrap):
+        self.raw = None
+        self.dw = dumpwrap
+    
+    def loadraw(self, rawlist):
+        self.raw = rawlist
+        self.ID = int(rawlist[0])
+        self.diary = int(rawlist[0])
+        self.text = rawlist[2]
+        self.date = datereader(rawlist[3])
+        self.dateTop = datereader(rawlist[4])
+        self.notDated = bool(int(rawlist[5]))
+        self.julian_calendar = bool(int(rawlist[6]))
+    
+    def getDiary(self):
+        return self.dw.diaries().byID(self.diary)
+
+    def getAuthor(self):
+        return self.getDiary().getAuthor()
+
+
+class ProzhitoDiaries(ProzhitoTable):
+    ...
+
+
+class ProzhitoDiary(ProzhitoTableNode):
+    ...
+
+
+class ProzhitoPerson:
+    ...
