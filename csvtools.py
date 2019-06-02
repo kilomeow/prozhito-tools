@@ -120,7 +120,8 @@ class ProzhitoNotes(ProzhitoTable):
     def searchDate(self, date):
         result = []        
         for n in self:
-            if n.date == date: result.append(n)
+            if (n.date[0], n.date[1], n.date[2]) == (date[0], date[1], date[2]):
+                result.append(n)
         return result
     
     def searchInterval(self, startdate, enddate):
