@@ -111,7 +111,7 @@ class ProzhitoTableNode:
 
 class ProzhitoNotes(ProzhitoTable):
     def __iter__(self):
-        return ProzhitoNotesIterable(self.csvreader, self.dumpwrap)
+        return ProzhitoNotesIterable(self.csvfile, self.csvreader, self.dumpwrap)
 
     def byDate(self, date):
         for n in self:
@@ -150,9 +150,10 @@ class ProzhitoNotes(ProzhitoTable):
 
 
 class ProzhitoNotesIterable(ProzhitoTableIterable):
-    def __init__(self, csvreader, dumpwrap):
+    def __init__(self, csvfile, csvreader, dumpwrap):
+        self.csvfile = csvfile
+        self.csvfile.seek(0)
         self.csvreader = csvreader
-        self.csvreader.seek(0)
         self.ind = 0
         self.dw = dumpwrap
     
