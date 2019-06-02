@@ -1,6 +1,6 @@
 import csv
 import os.path
-from datetime import datetime
+from datetime import datetime, timedelta
 
 _OLDDELIMITER = ',#'
 _NEWDELIMITER = '§'
@@ -135,11 +135,12 @@ class ProzhitoNotes(ProzhitoTable):
         result = []
         sd = datetime(*startdate)
         ed = datetime(*enddate)
-        for i in range(ed-sd):
-            result.append(((sd+i).timetuple()[:3], list()))
+        for i in range((ed-sd).days+1):
+            idate = (sd+timedelta(i)).timetuple()[:3]
+            result.append((idate, list()))
         for n in self:
             if startdate <= n.date <= enddate:
-                i = (datetime(*n.date)-sd).days()
+                i = (datetime(*n.date)-sd).days
                 result[i][1].append(n)
         return result
     
@@ -168,12 +169,8 @@ class ProzhitoNotesIterable(ProzhitoTableIterable):
 
 
 def datereader(datestring):
-    try:
-        return datetime.strptime(datestring, '%Y-%m-%d').date().timetuple()
-    except ValueError:
-        ds = datestring.split('-')
-        return tuple(map(int, ds))
-            
+    ds = datestring.split('-')
+    return tuple(map(int, ds))
 
 
 class ProzhitoNote(ProzhitoTableNode):
