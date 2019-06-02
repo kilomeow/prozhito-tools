@@ -131,15 +131,17 @@ class ProzhitoNotes(ProzhitoTable):
                 result.append(n)
         return result
     
-    #def sortInterval(self, startdate, enddate):
-    #    result = []        
-    #    for i in range((enddate-startdate).days()):
-    #        result.append([])
-    #    for n in self:
-    #        if startdate <= n.date <= enddate:
-    #            i = (n.date-startdate).days()
-    #            result[i].append(n)
-    #    return result
+    def sortInterval(self, startdate, enddate):
+        result = []
+        sd = datetime(*startdate)
+        ed = datetime(*enddate)
+        for i in range((ed-sd).days()):
+            result.append(((sd+i).timetuple(), list()))
+        for n in self:
+            if startdate <= n.date <= enddate:
+                i = (datetime(*n.date)-sd).days()
+                result[i][1].append(n)
+        return result
     
     def searchByDateParams(self, paramfunc):
         result = []
