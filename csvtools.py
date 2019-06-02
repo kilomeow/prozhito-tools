@@ -136,7 +136,7 @@ class ProzhitoNotes(ProzhitoTable):
         sd = datetime(*startdate)
         ed = datetime(*enddate)
         for i in range((ed-sd).days()):
-            result.append(((sd+i).timetuple(), list()))
+            result.append(((sd+i).timetuple()[:3], list()))
         for n in self:
             if startdate <= n.date <= enddate:
                 i = (datetime(*n.date)-sd).days()
