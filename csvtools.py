@@ -84,7 +84,7 @@ class ProzhitoTable:
 
     def load(self, dumpwrap, filename):
         filepath = os.path.join(dumpwrap.csvpath, filename)
-        f = open(filepath, newline='')
+        f = open(filepath, newline='', encoding='UTF-8')
         fi = CSV_Iterator(f, dumpwrap._olddelimiter, dumpwrap._newdelimiter)
         fr = csv.reader(fi, delimiter=dumpwrap._newdelimiter, quotechar=dumpwrap._quotechar)
         self.csvfile = f
