@@ -1,6 +1,6 @@
 import csv
 import os.path
-import datetime
+from datetime import datetime
 
 _OLDDELIMITER = ',#'
 _NEWDELIMITER = '§'
@@ -126,17 +126,25 @@ class ProzhitoNotes(ProzhitoTable):
     def searchInterval(self, startdate, enddate):
         result = []
         for n in self:
-            if startdate <= n.date <= enddate: result.append(n.date)
+            if startdate <= n.date <= enddate:
+                result.append(n)
         return result
     
-    def sortInterval(self, startdate, enddate):
-        result = []        
-        for i in range((enddate-startdate).days()):
-            result.append([])
+    #def sortInterval(self, startdate, enddate):
+    #    result = []        
+    #    for i in range((enddate-startdate).days()):
+    #        result.append([])
+    #    for n in self:
+    #        if startdate <= n.date <= enddate:
+    #            i = (n.date-startdate).days()
+    #            result[i].append(n)
+    #    return result
+    
+    def searchByDateParams(self, paramfunc):
+        result = []
         for n in self:
-            if startdate <= n.date <= enddate:
-                i = (n.date-startdate).days()
-                result[i].append(n)
+            if paramfunc(n.date):
+                result.append(n)
         return result
 
 
@@ -156,10 +164,10 @@ class ProzhitoNotesIterable(ProzhitoTableIterable):
 
 def datereader(datestring):
     try:
-        return datetime.datetime.strptime(datestring, '%Y-%m-%d').date()
+        return datetime.strptime(datestring, '%Y-%m-%d').date().timetuple()
     except ValueError:
         ds = datestring.split('-')
-        return list(map(int, ds))
+        return tuple(map(int, ds))
             
 
 
