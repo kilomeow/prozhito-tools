@@ -151,6 +151,7 @@ class ProzhitoNotes(ProzhitoTable):
 class ProzhitoNotesIterable(ProzhitoTableIterable):
     def __init__(self, csvreader, dumpwrap):
         self.csvreader = csvreader
+        self.csvreader.seek(0)
         self.ind = 0
         self.dw = dumpwrap
     
