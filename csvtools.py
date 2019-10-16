@@ -6,6 +6,10 @@ _OLDDELIMITER = ',#'
 _NEWDELIMITER = '§'
 _QUOTECHAR    = '"'
 
+DUMPWRAP = None
+
+from bisect import bisect_left
+
 class CSV_Iterator:
     """ This is a special input wrapper to change delimiter to OK format for python csv module."""
     def __init__(self, f, oldstr, newstr):
@@ -50,6 +54,12 @@ class DumpWrapper:
         self._notesfilename = DumpWrapper._NOTESFILENAME
         self._diariesfilename = DumpWrapper._DIARIESFILENAME
         self._personsfilename = DumpWrapper._PERSONSFILENAME
+        
+        self._notes = None
+        self.is_notes = False
+        
+        global DUMPWRAP
+        DUMPWRAP = self
 
     def dumpopen(self, csvpath):
         self.csvpath = csvpath
@@ -60,9 +70,13 @@ class DumpWrapper:
         return t.csvreader
     
     def notes(self):
-        n = ProzhitoNotes()
-        n.load(self, self._notesfilename)
-        return n
+        if not self.is_notes:
+            n = ProzhitoNotes()
+            n.load(self, self._notesfilename)
+            n.sortDates()
+            self._notes = n
+            self.is_notes = True
+        return self._notes
     
     def diaries(self):
         d = ProzhitoDiaries()
@@ -110,12 +124,32 @@ class ProzhitoTableNode:
 
 
 class ProzhitoNotes(ProzhitoTable):
+    def __init__(self):
+        self.notes_list = list()
+        self.dates = list()
+    
+    def load(self, dumpwrap, filename):
+        super().load(dumpwrap, filename)
+        c = 0
+        for i in self.csvreader:
+            n = ProzhitoNote()
+            n.loadraw(i)
+            self.notes_list.append(n)
+            self.dates.append((n.date, c))
+            c += 1
+    
     def __iter__(self):
         return ProzhitoNotesIterable(self.csvfile, self.csvreader, self.dumpwrap)
 
+    def sortDates(self):
+        self.dates.sort()
+
     def byDate(self, date):
-        for n in self:
-            if n.date == date: return n
+        notes_this_date = list()
+        for d, i in self.dates:
+            if d == date:
+                notes_this_date.append(self.notes_list[i])
+        return notes_this_date
     
     def searchDate(self, date):
         result = []        
@@ -162,7 +196,7 @@ class ProzhitoNotesIterable(ProzhitoTableIterable):
     
     def __next__(self):
         l = next(self.csvreader)
-        n = ProzhitoNote(self.dw)
+        n = ProzhitoNote()
         n.loadraw(l)     
         self.ind += 1        
         return n
@@ -174,9 +208,8 @@ def datereader(datestring):
 
 
 class ProzhitoNote(ProzhitoTableNode):
-    def __init__(self, dumpwrap):
+    def __init__(self):
         self.raw = None
-        self.dw = dumpwrap
     
     def loadraw(self, rawlist):
         self.raw = rawlist
@@ -195,6 +228,9 @@ class ProzhitoNote(ProzhitoTableNode):
         return self.getDiary().getAuthor()
     
     def __str__(self):
+        return self.text
+		
+    def __repr__(self):
         return self.text
 
 
