@@ -37,12 +37,13 @@ class CSV_Translater:
         self.f.flush()
 
 
-class ProzhitoTable:
-    def __init__(self):
+class DumpTable:
+    def __init__(self, dumpwrap=None, filename=None):
         self.dumpwrap = None
         self.filename = ''
         self.csvfile = None
         self.csvreader = None
+        if dumpwrap and filename: self.load(dumpwrap, filename)
 
     def load(self, dumpwrap, filename):
         filepath = os.path.join(dumpwrap.csvpath, filename)

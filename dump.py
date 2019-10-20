@@ -1,7 +1,8 @@
 from csvtools import ProzhitoTable, _OLDDELIMITER, _QUOTECHAR, _NEWDELIMITER
-import notes
+import os.path
 
-DUMPWRAP = None
+from notes import ProzhitoNotes
+#from author import ProzhitoAuthor
 
 class Wrapper:
     """ Interface for dump of Prozhito tables in csv. """    
@@ -16,23 +17,31 @@ class Wrapper:
         self._newdelimiter = _NEWDELIMITER
         self._quotechar = _quotechar
                 
-        self._notesfilename = Wrapper._NOTESFILENAME
-        self._diariesfilename = Wrapper._DIARIESFILENAME
-        self._personsfilename = Wrapper._PERSONSFILENAME
+        self.notes_filename = Wrapper._NOTESFILENAME
+        self.diaries_filename = Wrapper._DIARIESFILENAME
+        self.persons_filename = Wrapper._PERSONSFILENAME
         
-        self._notes = None
-        self.is_notes = False
+        self.notes = None
+        self.authors = None
         
-        global DUMPWRAP
-        DUMPWRAP = self
+        if self.chekpath(): self.
 
-    def dumpopen(self, csvpath):
+
+    def checkpath(self):
+        ls = os.path.listdir(self.csvpath)
+        return self.notes_filename   in ls and\
+               self.diaries_filename in ls and\
+               self.persons_filename in ls
+
+    def open(self, csvpath):
         self.csvpath = csvpath
+        self.load()
     
-    def csvopen(self, csvfilename):
-        t = ProzhitoTable()
-        t.load(self, csvfilename)
-        return t.csvreader
+    def load(self):
+        notes_table = DumpTable(self, self.notes_filename)
+        self.notes = notes.ProzhitoNotes()
+        
+        #self.authors = 
     
     def notes(self):
         if not self.is_notes:
