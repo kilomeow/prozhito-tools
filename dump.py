@@ -1,4 +1,5 @@
-from csvtools import ProzhitoTable, _OLDDELIMITER, _QUOTECHAR, _NEWDELIMITER
+from csvtools import DumpTable, _OLDDELIMITER, _QUOTECHAR, _NEWDELIMITER
+import os
 import os.path
 
 from notes import ProzhitoNotes
@@ -10,7 +11,7 @@ class Wrapper:
     _DIARIESFILENAME = 'diary.csv'
     _PERSONSFILENAME = 'persons.csv'
 
-    def __init__(self, csvpath='', _delimiter=_OLDDELIMITER, _quotechar=_QUOTECHAR):
+    def __init__(self, csvpath='.', _delimiter=_OLDDELIMITER, _quotechar=_QUOTECHAR):
         self.csvpath = csvpath
         
         self._olddelimiter = _delimiter
@@ -24,11 +25,11 @@ class Wrapper:
         self.notes = None
         self.authors = None
         
-        if self.chekpath(): self.
+        if self.checkpath(): self.load()
 
 
     def checkpath(self):
-        ls = os.path.listdir(self.csvpath)
+        ls = os.listdir(self.csvpath)
         return self.notes_filename   in ls and\
                self.diaries_filename in ls and\
                self.persons_filename in ls
@@ -39,25 +40,6 @@ class Wrapper:
     
     def load(self):
         notes_table = DumpTable(self, self.notes_filename)
-        self.notes = notes.ProzhitoNotes()
-        
+        self.notes = ProzhitoNotes()
+        self.notes.load(self.csvpath, notes_table.csvreader)
         #self.authors = 
-    
-    def notes(self):
-        if not self.is_notes:
-            n = notes.ProzhitoNotes()
-            n.load(self, self._notesfilename)
-            n.sortDates()
-            self._notes = n
-            self.is_notes = True
-        return self._notes
-    
-    #def diaries(self):
-    #    d = ProzhitoDiaries()
-    #    d.load(self, self._diariesfilename)
-    #    return d
-
-    #def persons(self):
-    #    p = ProzhitoPersons()
-    #    p.load(self, self._personsfilename)
-    #    return p

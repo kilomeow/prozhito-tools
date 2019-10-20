@@ -31,6 +31,11 @@ class ProzhitoNotes:
         else:
             self.load_dates()
         
+    def recalc_dates(self):
+        for i in range(len(self.notes_list)):
+            n = self.notes_list[i]
+            self.dates.append((n.date, i))
+        self.dates.sort()
     
     def check_dates(self):
         return os.path.exists(self.dates_filename)
@@ -56,17 +61,31 @@ class ProzhitoNotes:
         ns = ProzhitoNotes()
         d = self.dates[s]
         ns.dates = list(zip(map(lambda di: di[0], d), range(len(d))))
-        ns.notes_list = list(map(self.get_node_by_date, d))
+        ns.notes_list = list(map(self.get_note_by_date, d))
         return ns
     
     def find_id(self, i):
         ...
     
+    # the two above implementations of find_date and find_interval is stupid and slow,
+    # it should be rewritten using binary search on sorted dates list
+    
     def find_date(self, date):
-        ...
+        for d, i in self.dates:
+            if d == date:
+                return self.notes_list[i]
         
     def find_interval(self, date1, date2, day_step=1):
-        ...
+        ns = ProzhitoNotes()
+        c = 0
+        for d, i in self.dates:
+            if date1 <= d <= date2:
+                ns.notes_list.append(self.notes_list[i])
+                ns.dates.append((d, c))
+                c += 1
+            elif d > date2:
+                break
+        return ns
 
     def __getitem__(self, k):
         if type(k) == int:
@@ -78,7 +97,9 @@ class ProzhitoNotes:
         elif type(k) == slice:
             if type(k.start) == tuple or\
                type(k.stop)  == tuple:
-                return self.find_interval(k.start, k.stop, k.end if type(k.end) == int else 1)
+                return self.find_interval(k.start if k.start else (0, 0, 0), 
+                                          k.stop if k.stop else (9999, 99, 99),
+                                          k.step if type(k.step) == int else 1)
             elif type(k.start) == int or\
                  type(k.stop)  == int or\
                  type(k.step)  == int:
@@ -93,7 +114,7 @@ class ProzhitoNotes:
         if l <= 4:
             els.extend(map(repr, self))
         else:
-            els.extend(map(repr(self[:3])))
+            els.extend(map(repr, self[:3]))
             els.extend(['...', repr(self[-1])])
         return '[ {0} ]'.format(' ,\n  '.join(els))
 
@@ -162,7 +183,10 @@ def datereader(datestring):
 
 class ProzhitoNote:
     def __init__(self):
-        self.raw = None
+        self.ID = None
+        self.text = ''
+        self.diary = None
+        self.date = (0, 0, 0)
     
     def loadraw(self, rawlist):
         self.raw = rawlist
@@ -187,6 +211,4 @@ class ProzhitoNote:
 		
     def __repr__(self):
         return '#{0} "{1}..." @{2} [{3}]'.format(self.ID, ' '.join(self.text.split()[:3]), 
-                                                 self.diary, self.date)
-        
-note.author.notes
+                                                 self.diary, '-'.join(map(str, self.date)))
