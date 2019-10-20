@@ -22,7 +22,7 @@ class ProzhitoNotes:
             n.loadraw(i)
             self.notes_list.append(n)
             if add_dates: self.dates.append((n.date, c))
-            c += 0
+            c += 1
         
         # if no dates are dumped, sorting collected dates
         if add_dates:
@@ -118,6 +118,14 @@ class ProzhitoNotes:
             els.extend(['...', repr(self[-1])])
         return '[ {0} ]'.format(' ,\n  '.join(els))
 
+    def dump(self, fn):
+        import csv
+        with open(fn, 'w') as f:
+            w = csv.writer(f)
+            for n in self:
+                w.writerow(n.raw)
+
+
     # def byDate(self, date):
     #     notes_this_date = list()
     #     for d, i in self.dates:
@@ -191,7 +199,7 @@ class ProzhitoNote:
     def loadraw(self, rawlist):
         self.raw = rawlist
         self.ID = int(rawlist[0])
-        #self.author = author.find_author(author_id)
+        self.author = ... # todo sasha
         self.diary = int(rawlist[1])
         self.text = rawlist[2]
         self.date = datereader(rawlist[3])

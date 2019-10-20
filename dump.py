@@ -30,9 +30,10 @@ class Wrapper:
 
     def checkpath(self):
         ls = os.listdir(self.csvpath)
-        return self.notes_filename   in ls and\
-               self.diaries_filename in ls and\
-               self.persons_filename in ls
+        #return self.notes_filename   in ls and\
+        #       self.diaries_filename in ls and\
+        #       self.persons_filename in ls
+        return True
 
     def open(self, csvpath):
         self.csvpath = csvpath
@@ -41,5 +42,5 @@ class Wrapper:
     def load(self):
         notes_table = DumpTable(self, self.notes_filename)
         self.notes = ProzhitoNotes()
-        self.notes.load(self.csvpath, notes_table.csvreader)
+        self.notes.load(notes_table.csvreader, self.csvpath)
         #self.authors = 
