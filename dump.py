@@ -1,4 +1,4 @@
-from csvtools import DumpTable, _OLDDELIMITER, _QUOTECHAR, _NEWDELIMITER
+from csvtools import DumpTable
 import os
 import os.path
 
@@ -11,13 +11,9 @@ class Wrapper:
     _DIARIESFILENAME = 'diary.csv'
     _PERSONSFILENAME = 'persons.csv'
 
-    def __init__(self, csvpath='.', _delimiter=_OLDDELIMITER, _quotechar=_QUOTECHAR):
+    def __init__(self, csvpath='.'):
         self.csvpath = csvpath
         
-        self._olddelimiter = _delimiter
-        self._newdelimiter = _NEWDELIMITER
-        self._quotechar = _quotechar
-                
         self.notes_filename = Wrapper._NOTESFILENAME
         self.diaries_filename = Wrapper._DIARIESFILENAME
         self.persons_filename = Wrapper._PERSONSFILENAME
