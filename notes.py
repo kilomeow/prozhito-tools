@@ -126,64 +126,6 @@ class ProzhitoNotes(DumpTable):
         return len(self.dates)
 
 
-    # def byDate(self, date):
-    #     notes_this_date = list()
-    #     for d, i in self.dates:
-    #         if d == date:
-    #             notes_this_date.append(self.notes_list[i])
-    #     return notes_this_date
-    
-    # def searchDate(self, date):
-    #     result = []        
-    #     for n in self:
-    #         if (n.date[0], n.date[1], n.date[2]) == (date[0], date[1], date[2]):
-    #             result.append(n)
-    #     return result
-    
-    # def searchInterval(self, startdate, enddate):
-    #     result = []
-    #     for n in self:
-    #         if startdate <= n.date <= enddate:
-    #             result.append(n)
-    #     return result
-    
-    # def sortInterval(self, startdate, enddate):
-    #     result = []
-    #     sd = datetime(*startdate)
-    #     ed = datetime(*enddate)
-    #     for i in range((ed-sd).days+1):
-    #         idate = (sd+timedelta(i)).timetuple()[:3]
-    #         result.append((idate, list()))
-    #     for n in self:
-    #         if startdate <= n.date <= enddate:
-    #             i = (datetime(*n.date)-sd).days
-    #             result[i][1].append(n)
-    #     return result
-    
-    # def searchByDateParams(self, paramfunc):
-    #     result = []
-    #     for n in self:
-    #         if paramfunc(n.date):
-    #             result.append(n)
-    #     return result
-
-
-# class ProzhitoNotesIterable:
-#     def __init__(self, csvfile, csvreader, dumpwrap):
-#         self.csvfile = csvfile
-#         self.csvfile.seek(0)
-#         self.csvreader = csvreader
-#         self.ind = 0
-#         self.dw = dumpwrap
-    
-#     def __next__(self):
-#         l = next(self.csvreader)
-#         n = ProzhitoNote()
-#         n.loadraw(l)     
-#         self.ind += 1        
-#         return n
-
-
 def datereader(datestring):
     ds = datestring.split('-')
     return tuple(map(int, ds))
