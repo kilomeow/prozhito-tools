@@ -45,3 +45,10 @@ class Wrapper:
         self.authors = ProzhitoAuthors()
         self.authors.load(authors_table.csvreader)
     
+    def opencsv(self, csvfn):
+        import csv
+        n = ProzhitoNotes()
+        with open(csvfn) as f:
+            r = csv.reader(f)
+            n.load(r)
+        return n
