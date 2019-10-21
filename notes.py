@@ -22,7 +22,7 @@ class ProzhitoNotes:
 	    try:
                 n.loadraw(i)
 	    except:
-		continue
+	        continue
 	    else:
                 self.notes_list.append(n)
                 if add_dates: self.dates.append((n.date, c))
