@@ -1,23 +1,32 @@
+from csvtools import DumpTable
+
 import pickle
 import os.path
+
 
 class ID:
     def __init__(self, i):
         self.i = i
 
-class ProzhitoNotes:
-    def __init__(self):
+
+class ProzhitoNotes(DumpTable):
+    def __init__(self, dumpwrap):
+        super().__init__(dumpwrap)
         self.notes_list = list()
         self.dates = list()
     
-    def load(self, table_iterator, datespath=''):
+    def load(self, filename):
+        super().load(filename)
+        self._load()
+    
+    def _load(self):
         # checking are dates already sorted and dumped
-        self.dates_filename = os.path.join(datespath, 'dates.pkl')
+        self.dates_filename = os.path.join(self.dw.csvpath, 'dates.pkl')
         add_dates = not self.check_dates()
         
         # loading all the data
         c = 0
-        for i in table_iterator:
+        for i in self.table_iterator:
             n = ProzhitoNote()
             try:
                 n.loadraw(i)
@@ -63,7 +72,7 @@ class ProzhitoNotes:
         return iter(map(self.get_note_by_date, self.dates))
 
     def slice(self, s):
-        ns = ProzhitoNotes()
+        ns = ProzhitoNotes(self)
         d = self.dates[s]
         ns.dates = list(zip(map(lambda di: di[0], d), range(len(d))))
         ns.notes_list = list(map(self.get_note_by_date, d))
@@ -81,7 +90,7 @@ class ProzhitoNotes:
                 return self.notes_list[i]
         
     def find_interval(self, date1, date2, day_step=1):
-        ns = ProzhitoNotes()
+        ns = ProzhitoNotes(self)
         c = 0
         for d, i in self.dates:
             if date1 <= d <= date2:

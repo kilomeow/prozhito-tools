@@ -6,8 +6,6 @@ _OLDDELIMITER = ',#'
 _NEWDELIMITER = '§'
 _QUOTECHAR    = '"'
 
-DUMPWRAP = None
-
 class CSV_Iterator:
     """ This is a special input wrapper to change delimiter to OK format for python csv module."""
     def __init__(self, f, oldstr, newstr):
@@ -38,22 +36,32 @@ class CSV_Translater:
 
 
 class DumpTable:
-    def __init__(self, dumpwrap=None, filename=None):
-        self.dumpwrap = None
-        self.filename = ''
+    def __init__(self, dumpwrap):
+        self.dw = dumpwrap
+        
+        self._olddelimiter = dumpwrap._olddelimiter
+        self._newdelimiter = dumpwrap._newdelimiter
+        self._quotechar    = dumpwrap._quotechar
+        
+        self.filename = None
         self.csvfile = None
-        self.csvreader = None
-        if dumpwrap and filename: self.load(dumpwrap, filename)
+        self.table_iterator = None
 
-    def load(self, dumpwrap, filename):
-        filepath = os.path.join(dumpwrap.csvpath, filename)
+    def load(self, filename):
+        filepath = os.path.join(self.dw.csvpath, filename)
         f = open(filepath, newline='', encoding='UTF-8')
-        fi = CSV_Iterator(f, dumpwrap._olddelimiter, dumpwrap._newdelimiter)
-        fr = csv.reader(fi, delimiter=dumpwrap._newdelimiter, quotechar=dumpwrap._quotechar)
+        fi = CSV_Iterator(f, self.dw._olddelimiter, self.dw._newdelimiter)
+        fr = csv.reader(fi, delimiter=self.dw._newdelimiter, quotechar=self.dw._quotechar)
+        
+        self.filename = filename
         self.csvfile = f
-        self.dumpwrap = dumpwrap
-        self.filename = filename        
-        self.csvreader = fr
+        self.table_iterator = fr
+    
+    def cleanload(self, filepath):
+        with open(filepath) as f:
+            self.csvfile = f
+            self.table_iterator = csv.reader(f)
+        self.filename = os.path.split(filepath)[-1]
     
     def seek(self, n):
         self.csvfile.seek(n)

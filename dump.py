@@ -1,9 +1,10 @@
-from csvtools import DumpTable
+from csvtools import _OLDDELIMITER, _NEWDELIMITER, _QUOTECHAR
 import os
 import os.path
 
 from notes import ProzhitoNotes
-from author import ProzhitoAuthor
+from author import ProzhitoAuthors
+
 
 class Wrapper:
     """ Interface for dump of Prozhito tables in csv. """    
@@ -11,17 +12,21 @@ class Wrapper:
     _DIARIESFILENAME = 'diary.csv'
     _PERSONSFILENAME = 'persons.csv'
 
-    def __init__(self, csvpath='.'):
+    def __init__(self, csvpath='.', load_at_init=True):
         self.csvpath = csvpath
         
         self.notes_filename = Wrapper._NOTESFILENAME
         self.diaries_filename = Wrapper._DIARIESFILENAME
         self.persons_filename = Wrapper._PERSONSFILENAME
         
+        self._olddelimiter = _OLDDELIMITER
+        self._newdelimiter = _NEWDELIMITER
+        self._quotechar    = _QUOTECHAR
+        
         self.notes = None
         self.authors = None
         
-        if self.checkpath(): self.load()
+        if load_at_init and self.checkpath(): self.load()
 
     def checkpath(self):
         ls = os.listdir(self.csvpath)
@@ -34,17 +39,13 @@ class Wrapper:
         self.load()
     
     def load(self):
-        notes_table = DumpTable(self, self.notes_filename)
-        self.notes = ProzhitoNotes()
-        self.notes.load(notes_table.csvreader, self.csvpath)
-        authors_table = DumpTable(self, self.persons_filename)
-        self.authors = ProzhitoAuthors()
-        self.authors.load(authors_table.csvreader)
+        self.notes = ProzhitoNotes(self)
+        self.notes.load(self.notes_filename)
+        #self.authors = ProzhitoAuthors(self)
+        #self.authors.load(self.persons_filename)
     
-    def opencsv(self, csvfn):
-        import csv
+    def opencsv(self, csvfp):
         n = ProzhitoNotes()
-        with open(csvfn) as f:
-            r = csv.reader(f)
-            n.load(r)
+        n.cleanload(csvfp)
+        n._load()
         return n
