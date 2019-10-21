@@ -3,7 +3,7 @@ import os
 import os.path
 
 from notes import ProzhitoNotes
-#from author import ProzhitoAuthor
+from author import ProzhitoAuthor
 
 class Wrapper:
     """ Interface for dump of Prozhito tables in csv. """    
@@ -27,13 +27,11 @@ class Wrapper:
         
         if self.checkpath(): self.load()
 
-
     def checkpath(self):
         ls = os.listdir(self.csvpath)
-        #return self.notes_filename   in ls and\
-        #       self.diaries_filename in ls and\
-        #       self.persons_filename in ls
-        return True
+        return self.notes_filename   in ls and\
+               self.diaries_filename in ls and\
+               self.persons_filename in ls
 
     def open(self, csvpath):
         self.csvpath = csvpath
@@ -43,4 +41,7 @@ class Wrapper:
         notes_table = DumpTable(self, self.notes_filename)
         self.notes = ProzhitoNotes()
         self.notes.load(notes_table.csvreader, self.csvpath)
-        #self.authors = 
+        authors_table = DumpTable(self, self.persons_filename)
+        self.authors = ProzhitoAuthors()
+        self.authors.load(authors_table.csvreader)
+    
