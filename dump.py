@@ -41,8 +41,8 @@ class Wrapper:
     def load(self):
         self.notes = ProzhitoNotes(self)
         self.notes.load(self.notes_filename)
-        #self.authors = ProzhitoAuthors(self)
-        #self.authors.load(self.persons_filename)
+        self.authors = ProzhitoAuthors(self)
+        self.authors.load(self.persons_filename)
     
     def opencsv(self, csvfp):
         n = ProzhitoNotes()
