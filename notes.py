@@ -19,10 +19,15 @@ class ProzhitoNotes:
         c = 0
         for i in table_iterator:
             n = ProzhitoNote()
-            n.loadraw(i)
-            self.notes_list.append(n)
-            if add_dates: self.dates.append((n.date, c))
-            c += 1
+	    try:
+                n.loadraw(i)
+	    except:
+		continue
+	    else:
+                self.notes_list.append(n)
+                if add_dates: self.dates.append((n.date, c))
+                c += 1
+	    
         
         # if no dates are dumped, sorting collected dates
         if add_dates:
