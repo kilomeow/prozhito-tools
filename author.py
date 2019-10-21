@@ -18,7 +18,10 @@ class ProzhitoAuthors(DumpTable):
         # todo sasha
 
     def __getitem__(self, k):
-        return self.get_by_id(k)
+        return self.authors_list[k]
+    
+    def __len__(self):
+        return len(self.authors_list)
 
 
 class ProzhitoAuthor:

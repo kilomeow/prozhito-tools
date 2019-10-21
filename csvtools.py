@@ -62,6 +62,22 @@ class DumpTable:
             self.csvfile = f
             self.table_iterator = csv.reader(f)
         self.filename = os.path.split(filepath)[-1]
+
+    def __repr__(self):
+        l = len(self)
+        els = list()
+        if l <= 4:
+            els.extend(map(repr, self))
+        else:
+            els.extend(map(repr, self[:3]))
+            els.extend(['...', repr(self[-1])])
+        return '[ {0} ]'.format(' ,\n  '.join(els))
+
+    def dump(self, fn):
+        with open(fn, 'w') as f:
+            w = csv.writer(f)
+            for n in self:
+                w.writerow(n.raw)
     
     def seek(self, n):
         self.csvfile.seek(n)

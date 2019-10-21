@@ -122,22 +122,8 @@ class ProzhitoNotes(DumpTable):
         # if nothing of these had matched
         raise TypeError
     
-    def __repr__(self):
-        l = len(self.dates)
-        els = list()
-        if l <= 4:
-            els.extend(map(repr, self))
-        else:
-            els.extend(map(repr, self[:3]))
-            els.extend(['...', repr(self[-1])])
-        return '[ {0} ]'.format(' ,\n  '.join(els))
-
-    def dump(self, fn):
-        import csv
-        with open(fn, 'w') as f:
-            w = csv.writer(f)
-            for n in self:
-                w.writerow(n.raw)
+    def __len__(self):
+        return len(self.dates)
 
 
     # def byDate(self, date):
