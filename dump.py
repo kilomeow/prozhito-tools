@@ -4,6 +4,7 @@ import os.path
 
 from notes import ProzhitoNotes
 from author import ProzhitoAuthors
+from diary import ProzhitoDiaries
 
 
 class Wrapper:
@@ -43,6 +44,8 @@ class Wrapper:
         self.notes.load(self.notes_filename)
         self.authors = ProzhitoAuthors(self)
         self.authors.load(self.persons_filename)
+        self.diaries = ProzhitoDiaries(self)
+        self.diaries.load(self.diaries_filename)
     
     def opencsv(self, csvfp):
         n = ProzhitoNotes()

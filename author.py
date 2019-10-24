@@ -14,8 +14,9 @@ class ProzhitoAuthors(DumpTable):
             self.authors_list.append(a)
 
     def get_by_id(self, ID):
-        ...
-        # todo sasha
+        print('trying to find author with ID', ID)
+        for a in self.authors_list:
+            if a.ID == ID: return a
 
     def __getitem__(self, k):
         return self.authors_list[k]
@@ -31,7 +32,7 @@ class ProzhitoAuthor:
 
     def loadraw(self, r):
         self.raw = r
-        self.ID = r[0]
+        self.ID = int(r[0])
         self.first_name = r[1]
         self.last_name = r[2]
         self.second_name = r[3]

@@ -27,7 +27,7 @@ class ProzhitoNotes(DumpTable):
         # loading all the data
         c = 0
         for i in self.table_iterator:
-            n = ProzhitoNote()
+            n = ProzhitoNote(self.dw)
             try:
                 n.loadraw(i)
             except:
@@ -132,17 +132,18 @@ def datereader(datestring):
 
 
 class ProzhitoNote:
-    def __init__(self):
+    def __init__(self, dw):
         self.ID = None
         self.text = ''
         self.diary = None
         self.date = (0, 0, 0)
+        self.dw = dw
     
     def loadraw(self, rawlist):
         self.raw = rawlist
         self.ID = int(rawlist[0])
         self.author = ... # todo sasha
-        self.diary = int(rawlist[1])
+        self.diary_ID = int(rawlist[1])
         self.text = rawlist[2]
         self.date = datereader(rawlist[3])
         self.dateTop = datereader(rawlist[4])
@@ -150,11 +151,11 @@ class ProzhitoNote:
         self.julian_calendar = bool(int(rawlist[6]))
         #self.tags = list()
     
-    def getDiary(self):
-        return self.dw.diaries().byID(self.diary)
+    def get_diary(self):
+        return self.dw.diaries.get_by_id(self.diary_ID)
 
-    def getAuthor(self):
-        return self.getDiary().getAuthor()
+    def get_author(self):
+        return self.get_diary().get_author()
     
     def __str__(self):
         return self.text
