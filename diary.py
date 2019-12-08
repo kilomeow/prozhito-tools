@@ -1,3 +1,4 @@
+from notes import ProzhitoNotes
 from csvtools import DumpTable
 
 class ProzhitoDiaries(DumpTable):
@@ -37,8 +38,14 @@ class ProzhitoDiary:
         self.ID = int(r[0])
         self.author_ID = int(r[3])
 
-    def get_author(self):
+    @property
+    def author(self):
         return self.dw.authors.get_by_id(self.author_ID)
+
+    @property
+    def notes(self):
+        notes_of_diary = filter(lambda note: note.diary_ID == self.ID, self.dw.notes)
+        return ProzhitoNotes.new_from_list(self.dw, notes_of_diary)
 
     def __repr__(self):
         return '@{0} raw {1}'.format(self.ID, self.raw)

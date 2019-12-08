@@ -18,6 +18,13 @@ class ProzhitoNotes(DumpTable):
     def load(self, filename):
         super().load(filename)
         self._load()
+
+    @classmethod
+    def new_from_list(cls, dumpwrap, notes_iter):
+        notes = cls(dumpwrap)
+        notes.notes_list = list(notes_iter)
+        notes.recalc_dates()
+        return notes
     
     def _load(self):
         # checking are dates already sorted and dumped
@@ -135,14 +142,12 @@ class ProzhitoNote:
     def __init__(self, dw):
         self.ID = None
         self.text = ''
-        self.diary = None
         self.date = (0, 0, 0)
         self.dw = dw
     
     def loadraw(self, rawlist):
         self.raw = rawlist
         self.ID = int(rawlist[0])
-        self.author = ... # todo sasha
         self.diary_ID = int(rawlist[1])
         self.text = rawlist[2]
         self.date = datereader(rawlist[3])
@@ -150,16 +155,18 @@ class ProzhitoNote:
         self.notDated = bool(int(rawlist[5]))
         self.julian_calendar = bool(int(rawlist[6]))
         #self.tags = list()
-    
-    def get_diary(self):
+
+    @property
+    def diary(self):
         return self.dw.diaries.get_by_id(self.diary_ID)
 
-    def get_author(self):
-        return self.get_diary().get_author()
+    @property
+    def author(self):
+        return self.diary.author
     
     def __str__(self):
         return self.text
 		
     def __repr__(self):
         return '#{0} "{1}..." @{2} [{3}]'.format(self.ID, ' '.join(self.text.split()[:3]), 
-                                                 self.diary, '-'.join(map(str, self.date)))
+                                                 self.diary_ID, '-'.join(map(str, self.date)))
