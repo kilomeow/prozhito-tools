@@ -1,5 +1,5 @@
-from csvtools import DumpTable
-from notes import ProzhitoNotes
+from .csvtools import DumpTable
+from .notes import ProzhitoNotes
 
 class ProzhitoAuthors(DumpTable):
     def __init__(self, dumpwrapper):

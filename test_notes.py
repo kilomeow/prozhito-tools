@@ -1,5 +1,5 @@
-from notes import ProzhitoNotes, ProzhitoNote
-from random import randrange
+from .notes import ProzhitoNotes, ProzhitoNote
+from .random import randrange
 
 notes = ProzhitoNotes()
 notes.notes_list = [ProzhitoNote() for i in range(10)]

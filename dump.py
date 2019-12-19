@@ -1,10 +1,10 @@
-from csvtools import _OLDDELIMITER, _NEWDELIMITER, _QUOTECHAR
+from .csvtools import _OLDDELIMITER, _NEWDELIMITER, _QUOTECHAR
 import os
 import os.path
 
-from notes import ProzhitoNotes
-from author import ProzhitoAuthors
-from diary import ProzhitoDiaries
+from .notes import ProzhitoNotes
+from .author import ProzhitoAuthors
+from .diary import ProzhitoDiaries
 
 
 class Wrapper:

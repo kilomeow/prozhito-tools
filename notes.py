@@ -1,4 +1,4 @@
-from csvtools import DumpTable
+from .csvtools import DumpTable
 
 import pickle
 import os.path
