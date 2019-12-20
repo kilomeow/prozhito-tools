@@ -36,7 +36,7 @@ class ProzhitoDiary:
     def loadraw(self, r):
         self.raw = r
         self.ID = int(r[0])
-        self.author_ID = int(r[3])
+        self.author_ID = int(r[1])
 
     @property
     def author(self):

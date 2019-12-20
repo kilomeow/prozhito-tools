@@ -170,3 +170,9 @@ class ProzhitoNote:
     def __repr__(self):
         return '#{0} "{1}..." @{2} [{3}]'.format(self.ID, ' '.join(self.text.split()[:3]), 
                                                  self.diary_ID, '-'.join(map(str, self.date)))
+
+    @property
+    def meta(self):
+        return '#{0} @{1} {3} (@{2}) [{4}]'.format(self.ID, self.diary_ID,
+                                                   self.author.ID, self.author.name,
+                                                   '{0}.{1}.{2}'.format(*self.date))
